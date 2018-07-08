@@ -32,6 +32,15 @@ import albumData from './../data/albums';
             <col id="song-duration-column" />
           </colgroup>
           <tbody>
+          {
+            this.state.album.songs.map( (song, index) =>
+              <tr className="album-song" key={index}>
+                <td >{index + 1}</td>
+                <td>{song.title}</td>
+                <td>{song.duration}</td>
+              </tr>
+            )
+          }
           </tbody>
          </table>
        </section>
