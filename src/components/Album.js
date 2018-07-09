@@ -13,8 +13,10 @@ import PlayerBar from './PlayerBar';
          album: album,
          currentSong: album.songs[0],
          currentTime: 0,
+         volume: "0.6",
          duration: album.songs[0].duration,
-         isPlaying: false
+         isPlaying: false,
+
        };
 
        this.audioElement = document.createElement('audio');
@@ -27,15 +29,20 @@ import PlayerBar from './PlayerBar';
        },
          durationchange: e => {
          this.setState({ duration: this.audioElement.duration });
+       },
+         volumechange: e => {
+         this.setState({ volume: this.audioElement.volume });
        }
      };
      this.audioElement.addEventListener('timeupdate', this.eventListeners.timeupdate);
      this.audioElement.addEventListener('durationchange', this.eventListeners.durationchange);
+     this.audioElement.addEventListener('volumechange', this.eventListeners.volumechange);
    }
      componentWilUnmount() {
        this.audioElement.src = null;
        this.audioElement.removeEventListener('timeupdate', this.eventListeners.timeupdate);
        this.audioElement.removeEventListener('durationchange', this.eventListeners.durationchange);
+       this.audioElement.removeEventListener('volumechange', this.eventListeners.volumechange);
      };
 
      play() {
@@ -103,6 +110,24 @@ import PlayerBar from './PlayerBar';
         this.audioElement.currentTime = newTime;
         this.setState({ currentTime: newTime });
       }
+      handleVolumeChange(e) {
+        const newVolume = e.target.value;
+        this.audioElement.volume = newVolume;
+        this.setState({ volume: newVolume});
+      }
+      formatTime(time) {
+        if (time === undefined || isNaN(time)){
+          return `-:--`
+        }
+       const minutes = Math.floor(time/60);
+       const seconds = Math.floor(time-minutes*60);
+       if(seconds<10){
+       return `${minutes}:0${seconds}`
+       }
+       else{
+         return `${minutes}:${seconds}`
+       }
+      }
    render() {
      return (
        <section className="album">
@@ -126,7 +151,7 @@ import PlayerBar from './PlayerBar';
                 <tr className="album-song" key={index} onClick={() => this.handleSongClick(song)} >
                   <td onMouseEnter={() => this.handleHoverOn(song) } onMouseLeave={() => this.handleHoverOff(song)}>{this.handleButton(song, index)}</td>
                   <td>{song.title}</td>
-                  <td>{song.duration}</td>
+                  <td>{this.formatTime(song.duration)}</td>
                 </tr>
               )
             }
@@ -135,12 +160,15 @@ import PlayerBar from './PlayerBar';
          <PlayerBar
             isPlaying={this.state.isPlaying}
             currentSong={this.state.currentSong}
+            volume={this.audioElement.volume}
             currentTime={this.audioElement.currentTime}
             duration={this.audioElement.duration}
             handleSongClick={() => this.handleSongClick(this.state.currentSong)}
             handlePrevClick={() => this.handlePrevClick()}
             handleNextClick={() => this.handleNextClick()}
             handleTimeChange={(e) => this.handleTimeChange(e)}
+            handleVolumeChange={(e) => this.handleVolumeChange(e)}
+            formatTime={(time) => this.formatTime(time)}
           />
        </section>
      );
