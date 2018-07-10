@@ -139,7 +139,7 @@ import PlayerBar from './PlayerBar';
              <div id="release-info">{this.state.album.releaseInfo}</div>
            </div>
          </section>
-         <table id="song-list">
+         <table id="song-list" className="table">
           <colgroup>
             <col id="song-number-column" />
             <col id="song-title-column" />
